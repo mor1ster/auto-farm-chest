@@ -1,0 +1,27 @@
+getfenv().chests = true  -- Set chests to true  
+
+-- Loop for chest interaction  
+while getfenv().chests do  
+    task.wait()  -- Wait before the next iteration to prevent excessive CPU usage  
+    
+    pcall(function()  
+        -- Iterate through all descendants in the workspace  
+        for _, v in pairs(workspace:GetDescendants()) do  
+            -- Check for valid ProximityPrompt conditions  
+            if v:IsA("ProximityPrompt") and   
+               v.Parent.Name == "HumanoidRootPart" and   
+               not v.Parent.Parent:GetAttribute("OpenParticlesType") and   
+               v.Enabled and v.ActionText == "Open" and   
+               getfenv().chests then  
+                
+                -- Move the player's HumanoidRootPart to the prompt's parent position  
+                repeat   
+                    task.wait()  
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame  
+                    
+                    fireproximityprompt(v)  
+                until not v.Enabled or not getfenv().chests  -- Ends when the proximity prompt is closed or chests is set to false  
+            end  
+        end  
+    end)  
+end  
